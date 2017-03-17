@@ -12,11 +12,7 @@ Weight = enum(BOOLEAN=0, TF=1, TFIDF=2)
 def postTagging(docs):
     documents = []
     df = {}
-    all = len(docs)
-    i = 0;
     for text in docs:
-        i+=1
-        print "{0}% :: {1} de {2}".format(i*100/all, i, all)
         tokens = nltk.word_tokenize(text.lower())
         tags = nltk.pos_tag(tokens)
 
@@ -24,7 +20,7 @@ def postTagging(docs):
         distinctTag = []
         for tag in tags:
             # Dejo solo aquellos terminos que son palabras con al menos dos letras
-            if not re.match("^[a-z]{2,}$", tag[0]):
+            if not re.match("^[a-z\-]{2,}$", tag[0]):
                 continue
 
             documents[-1][tag] = documents[-1].get(tag,0) + 1
@@ -32,8 +28,8 @@ def postTagging(docs):
             if tag not in distinctTag:
                 distinctTag.append(tag)
 
-        if len(documents[-1]) == 0:
-            documents.pop()
+        # if len(documents[-1]) == 0:
+        #     documents.pop()
 
         for tag in distinctTag:
             df[tag] = df.get(tag, 0) + 1
@@ -46,7 +42,7 @@ def wordBigrams(docs):
     stemmer = nltk.stem.PorterStemmer()
 
     for text in docs:
-        tokens = [token for token in nltk.word_tokenize(text.lower()) if re.match("^[a-z]{2,}$", token)]
+        tokens = [token for token in nltk.word_tokenize(text.lower()) if re.match("^[a-z\-]{2,}$", token)]
 
         documents.append({})
         distinctTag = []
@@ -58,8 +54,8 @@ def wordBigrams(docs):
             if tag not in distinctTag:
                 distinctTag.append(tag)
 
-        if len(documents[-1]) == 0:
-            documents.pop()
+        # if len(documents[-1]) == 0:
+        #     documents.pop()
 
         for tag in distinctTag:
             df[tag] = df.get(tag, 0) + 1
@@ -88,8 +84,8 @@ def Procesing_Docs(docs):
             if token not in distint_words:
                 distint_words.append(token)
 
-        if len(documents[-1]) == 0:
-            documents.pop()
+        # if len(documents[-1]) == 0:
+        #     documents.pop()
 
         # Contador de la frecuencia de documento
         for token in distint_words:
@@ -100,14 +96,20 @@ def Procesing_Docs(docs):
 
 def Computing_Weight(docs, df, weighting_eschema):
     if weighting_eschema != Weight.TF:
-        N = float(len(docs))
         modified_documents = []
         for doc in docs:
+
             modified_documents.append({})
+
             for term in doc.keys():
+
                 if weighting_eschema == Weight.BOOLEAN:
+
                     modified_documents[-1][term] = 1
+
+
                 elif weighting_eschema == Weight.TFIDF:
+                    N = float(len(docs))
                     modified_documents[-1][term] = doc[term] * log(N / df[term])
 
         return modified_documents
@@ -148,9 +150,10 @@ def Cosine_similarity(doc1, doc2):
 
 def find_most_similars_docs(docs, idx):
     similarities = {id: [] for id in idx}
-    for idx_doc in xrange(len(docs)):
-        for id in idx:
-            if id != idx_doc:
+
+    for id in idx:
+        for idx_doc in xrange(len(docs)):
+            if id != idx_doc and docs[id] and docs[idx_doc]:
                 sim = Cosine_similarity(docs[id], docs[idx_doc])
                 similarities[id].append((sim, idx_doc))
 
