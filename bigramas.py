@@ -28,48 +28,45 @@ if __name__ == "__main__":
 
     db_file.close()
 
-    print "Resultados para la Base de Datos CACM"
+    # print "Resultados para la Base de Datos CACM"
     docs_indexed, df = wordBigrams(docs)
 
-    print "Documents with boolean weight"
+    # print "Documents with boolean weight"
     docs_with_boolean_weight = Computing_Weight(docs_indexed, df, Weight.BOOLEAN)
-    # Printing_Matrix(docs_with_boolean_weight, df)
 
-    print "\n" * 3
+    # print "\n" * 3
 
-    print "Documents with TF weight"
+    # print "Documents with TF weight"
     docs_with_TF_weight = Computing_Weight(docs_indexed, df, Weight.TF)
-    # Printing_Matrix(docs_with_TF_weight, df)
 
-    print "\n" * 3
+    # print "\n" * 3
 
-    print "Documents with TF.IDF weight"
+    # print "Documents with TF.IDF weight"
     docs_with_TFIDF_weight = Computing_Weight(docs_indexed, df, Weight.TFIDF)
-    # Printing_Matrix(docs_with_TFIDF_weight, df)
 
-    print "\n" * 3
+    # print "\n" * 3
 
-    boolean_similarities = find_most_similars_docs(docs_with_boolean_weight, xrange(5))
-    TF_similarities = find_most_similars_docs(docs_with_TF_weight, xrange(5))
-    TFIDF_similarities = find_most_similars_docs(docs_with_TFIDF_weight, xrange(5))
+    boolean_similarities = find_most_similars_docs(docs_with_boolean_weight, xrange(3))
+    TF_similarities = find_most_similars_docs(docs_with_TF_weight, xrange(3))
+    TFIDF_similarities = find_most_similars_docs(docs_with_TFIDF_weight, xrange(3))
 
     print "Printing documents most similars using wordBigrams"
     for x in xrange(3):
         print "For Document:", docs[x], "\n"
         print "Most similars with Boolean Weight"
         for sim, y in boolean_similarities[x]:
-            print "Doc: %s - Sim: %f" % (docs[y], sim)
+            print "Doc(%d): %s - Sim: %f" % (y, docs[y], sim)
 
         print
 
         print "Most similars with TF Weight"
         for sim, y in TF_similarities[x]:
-            print "Doc: %s - Sim: %f" % (docs[y], sim)
+            print "Doc: %s - Sim: %f" % (docs[y+1], sim)
 
         print
 
         print "Most similars with TF.IDF Weight"
         for sim, y in TFIDF_similarities[x]:
-            print "Doc: %s - Sim: %f" % (docs[y], sim)
+            print "Doc: %s - Sim: %f" % (docs[y+1], sim)
 
         print
